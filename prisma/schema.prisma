@@ -1,0 +1,25 @@
+datasource db {
+  provider = "postgresql" // 💡 Change to "mysql" or "sqlite" if needed
+  url      = env("DATABASE_URL") // 💡 Back to traditional env syntax!
+}
+
+generator client {
+  provider = "prisma-client-js" // 💡 v6 uses "prisma-client-js"
+}
+
+model User {
+  user_id    Int      @id @default(autoincrement())
+  user_name  String
+  user_email String   @unique
+
+  stores Store[]
+}
+
+model Store {
+  store_id    Int      @id @default(autoincrement())
+  store_name  String   @db.VarChar(100)
+  store_email String?
+
+  userId Int?
+  user   User? @relation(fields: [userId], references: [user_id])
+}
