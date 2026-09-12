@@ -1,7 +1,7 @@
 const {
     getUsers: getUsersService,
     getUserById: getUserByIdService,
-    createUser: createUserService,
+    // createUser: createUserService,
     updateUser: updateUserService,
     deleteUser: deleteUserService,
 } = require('../services/usersService');
@@ -12,7 +12,12 @@ const {
 
 const getUsers = async (req, res) => {
     try {
-        const users = await getUsersService();
+        const page = req.query.page ? parseInt(req.query.page) : 1;
+        const limit = req.query.limit ? parseInt(req.query.limit) : 3;
+        if (isNaN(page) || isNaN(limit) || page < 1 || limit < 1 || !Number.isInteger(page) || !Number.isInteger(limit) || limit >= 100) {
+            return res.status(400).json({ message: 'Invalid page or limit parameter' });
+        }
+        const users = await getUsersService({ page, limit });
         res.status(200).json(users);
     } catch (error) {
         res.status(500).json({ message: 'Error fetching users', error: error.message });

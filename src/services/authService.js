@@ -31,9 +31,6 @@ const registerUser = async (userData) => {
     return user;
 };
 
-
-
-
 const loginUser = async(userData) => {
     const {user_email, password} = userData;
     // console.log("user_email", user_email);

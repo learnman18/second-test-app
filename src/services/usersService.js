@@ -1,6 +1,13 @@
 const prisma = require('../../config/prisma');
 
-const getUsers = async () => {
+//page and limit is query params for pagination, we will use them to get the users in pages, currently hardcoded from controller file, we can check.
+const getUsers = async ({ page, limit }) => {
+    //consider limit is 5 records on one page, limits can differ based on our requirement - users?page=1 as limit is hardcoded to 5, then it will display
+    //first 5 records on page 1 and at that skip is 0, once we make the change users?page=2, then it will display next 5 records on page 2 and at that 
+    //time it will skip previous 5, and similary it will do for other page and for that we have this formula.
+    //skip = (page -1) * limit which is if we are on page 3, skiap = (3-1) * 5 = 10, if we are on page 4, skip = (4-1) * 5 = 15, and it will skip those records
+    //to display
+    const skip = (page - 1) * limit;
   return prisma.user.findMany({
     orderBy: { user_id: 'asc' },
     include: {
@@ -9,6 +16,8 @@ const getUsers = async () => {
           select: { stores: true }
         }
     },
+    skip: skip,
+    take: limit
   });
 };
 
@@ -88,4 +97,4 @@ const deleteUser = async (id) => {
   });
 };
 
-module.exports = { getUsers, getUserById, createUser, updateUser, deleteUser };
+module.exports = { getUsers, getUserById, updateUser, deleteUser };
