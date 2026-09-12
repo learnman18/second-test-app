@@ -11,6 +11,7 @@ model User {
   user_id    Int      @id @default(autoincrement())
   user_name  String
   user_email String   @unique
+  password String
 
   stores Store[]
 }

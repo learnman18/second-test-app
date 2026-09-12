@@ -41,21 +41,23 @@ const getUserById = async (id) => {
     },
   });
 };
+//we are goiing to comment out createUser function because we will use registerUser  function from authService.js to create user and hash the
+//password before saving it to the database. We will use bcrypt to hash the password.
 
-const createUser = async (userData) => {
-  const { user_name, user_email } = userData || {};
+// const createUser = async (userData) => {
+//   const { user_name, user_email } = userData || {};
 
-  if (!user_name || !user_email) {
-    throw new Error('user_name and user_email are required');
-  }
+//   if (!user_name || !user_email) {
+//     throw new Error('user_name and user_email are required');
+//   }
 
-  return prisma.user.create({
-    data: {
-      user_name,
-      user_email,
-    },
-  });
-};
+//   return prisma.user.create({
+//     data: {
+//       user_name,
+//       user_email,
+//     },
+//   });
+// };
 
 const updateUser = async (id, userData) => {
   const userId = Number(id);
@@ -69,6 +71,7 @@ const updateUser = async (id, userData) => {
     data: {
       ...(userData.user_name && { user_name: userData.user_name }),
       ...(userData.user_email && { user_email: userData.user_email }),
+      ...(userData.password && { password: userData.password }),
     },
   });
 };
