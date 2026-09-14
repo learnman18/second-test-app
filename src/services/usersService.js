@@ -103,4 +103,21 @@ const deleteUser = async (id) => {
   });
 };
 
-module.exports = { getUsers, getUserById, updateUser, deleteUser };
+const uploadProfileImage = async (id, imagePath) => {
+  const userId = Number(id);
+
+  if (Number.isNaN(userId)) {
+    throw new Error('Invalid user ID');
+  }
+
+  return prisma.user.update({
+    where: {
+      user_id: userId
+    },
+    data: {
+      profile_image: imagePath
+    }
+  });
+};
+
+module.exports = { getUsers, getUserById, updateUser, deleteUser, uploadProfileImage };
