@@ -1,3 +1,4 @@
+const fs = require('fs');
 const prisma = require('../../config/prisma');
 
 //page and limit is query params for pagination, we will use them to get the users in pages, currently hardcoded from controller file, we can check.
@@ -110,7 +111,25 @@ const uploadProfileImage = async (id, imagePath) => {
     throw new Error('Invalid user ID');
   }
 
-  return prisma.user.update({
+  const existingUser = await prisma.user.findUnique({
+    where: {
+      user_id: userId
+    }
+  });
+
+  const oldImagePath = existingUser.profile_image;
+
+  if (!existingUser) {
+    throw new Error('User not found');
+  }
+
+  console.log(
+    'Old profile image:',
+    existingUser.profile_image
+  );
+
+  //image upload/update logic.
+  const updateUser = prisma.user.update({
     where: {
       user_id: userId
     },
@@ -118,6 +137,19 @@ const uploadProfileImage = async (id, imagePath) => {
       profile_image: imagePath
     }
   });
+
+  //deleting the image if it exists, so that we don't have multiple images stored for the same user and also to save storage space.
+  if (oldImagePath) {
+    fs.unlink(oldImagePath, (err) => {
+      if (err) {
+        console.error('Error deleting old profile image:', err);
+      } else {
+        console.log('Old profile image deleted successfully');
+      }
+    });
+  }
+
+  return updateUser;
 };
 
 module.exports = { getUsers, getUserById, updateUser, deleteUser, uploadProfileImage };
