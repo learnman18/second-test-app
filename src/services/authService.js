@@ -20,22 +20,23 @@ const JWT_SECRET = process.env.JWT_SECRET;
 //POST /auth/login to login user.
 
 const registerUser = async (userData) => {
-    const hashedPassword = await bcrypt.hash(userData.password, 10);
-    const user = await prisma.user.create({
-        data: {
-            user_name: userData.user_name,
-            user_email: userData.user_email,
-            password: hashedPassword
-        }
-    });
-    return user;
+  const hashedPassword = await bcrypt.hash(userData.password, 10);
+  const user = await prisma.user.create({
+    data: {
+      user_name: userData.user_name,
+      user_email: userData.user_email,
+      password: hashedPassword,
+      role: userData.role || 'user', // Default role is 'user' if not provided
+    }
+  });
+  return user;
 };
 
-const loginUser = async(userData) => {
-    const {user_email, password} = userData;
-    // console.log("user_email", user_email);
-    // console.log("password", password);
-    const user = await prisma.user.findUnique({
+const loginUser = async (userData) => {
+  const { user_email, password } = userData;
+  // console.log("user_email", user_email);
+  // console.log("password", password);
+  const user = await prisma.user.findUnique({
     where: {
       user_email,
     },
@@ -53,7 +54,11 @@ const loginUser = async(userData) => {
   if (!isPasswordValid) {
     throw new Error('Invalid password');
   }
-  const token = jwt.sign({ userId: user.user_id }, JWT_SECRET, { expiresIn: '1h' });
+  const token = jwt.sign({
+    userId: user.user_id,
+    userEmail: user.user_email,
+    userRole: user.user_role,
+  }, JWT_SECRET, { expiresIn: '1h' });
   return token;
 
 }
