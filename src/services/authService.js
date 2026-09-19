@@ -26,7 +26,7 @@ const registerUser = async (userData) => {
       user_name: userData.user_name,
       user_email: userData.user_email,
       password: hashedPassword,
-      role: userData.role || 'user', // Default role is 'user' if not provided
+      role: userData.user_role || 'user', // Default role is 'user' if not provided
     }
   });
   return user;
