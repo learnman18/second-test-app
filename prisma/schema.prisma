@@ -8,20 +8,19 @@ generator client {
 }
 
 model User {
-  user_id    Int      @id @default(autoincrement())
-  user_name  String
-  user_email String   @unique
-  password String
+  user_id       Int     @id @default(autoincrement())
+  user_name     String
+  user_email    String  @unique
+  password      String
   profile_image String?
-
-  stores Store[]
+  user_role     String @default("user") //user is default user_role
+  stores        Store[]
 }
 
 model Store {
-  store_id    Int      @id @default(autoincrement())
-  store_name  String   @db.VarChar(100)
+  store_id    Int     @id @default(autoincrement())
+  store_name  String  @db.VarChar(100)
   store_email String?
-
-  userId Int?
-  user   User? @relation(fields: [userId], references: [user_id])
+  userId      Int?
+  user        User?   @relation(fields: [userId], references: [user_id])
 }

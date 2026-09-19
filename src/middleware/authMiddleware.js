@@ -23,4 +23,16 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
-module.exports = {authMiddleware};
+//authrize user who has certain permission or not for example only admin can delete or else user will get forbidden error.
+const authorize = (allowedRole) => {
+  return (req, res, next) => {
+    if (req.user_role !== allowedRole) {
+      return res.status(403).json({
+        message: 'forbidden'
+      })
+    }
+    next();
+  }
+}
+
+module.exports = { authMiddleware, authorize };
