@@ -28,7 +28,7 @@ const authorize = (allowedRole) => {
   return (req, res, next) => {
     if (req.user_role !== allowedRole) {
       return res.status(403).json({
-        message: 'forbidden'
+        message: `forbidden - user needs to be admin`
       })
     }
     next();

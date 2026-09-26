@@ -26,7 +26,7 @@ const registerUser = async (userData) => {
       user_name: userData.user_name,
       user_email: userData.user_email,
       password: hashedPassword,
-      role: userData.user_role || 'user', // Default role is 'user' if not provided
+      user_role: userData.user_role || 'user', // Default role is 'user' if not provided
     }
   });
   return user;
@@ -58,7 +58,7 @@ const loginUser = async (userData) => {
     userId: user.user_id,
     userEmail: user.user_email,
     userRole: user.user_role,
-  }, JWT_SECRET, { expiresIn: '1h' });
+  }, JWT_SECRET, { expiresIn: '2h' });
   return token;
 
 }
