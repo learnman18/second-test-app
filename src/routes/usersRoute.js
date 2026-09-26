@@ -15,7 +15,7 @@ const upload = require('../middleware/uploadMiddleware');
 router.get('/', authMiddleware, getUsers);
 router.get('/:id', authMiddleware, getUserById);
 // router.post('/', validationMiddleware, createUser); //we are going to comment out createUser function because we will use registerUser  function from authService.js to create user and hash thepassword before saving it to the database. We will use bcrypt to hash the password.
-router.put('/:id', validationMiddleware, updateUser);
+router.put('/:id', authorize('admin'), updateUser); //user needs to be admin to update and delete user details
 router.delete('/:id', authorize('admin'), deleteUser);
 router.post('/:id/profile-image', upload.single('image'), uploadProfileImage); //another users endpoint to upload profile picture.
 module.exports = router;
