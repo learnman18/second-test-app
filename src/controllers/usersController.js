@@ -5,6 +5,7 @@ const {
   updateUser: updateUserService,
   deleteUser: deleteUserService,
   uploadProfileImage: uploadProfileImageService,
+  createUserWithStore,
 } = require('../services/usersService');
 
 //here we are not using next() because we are handling errors in the controller itself and sending appropriate responses to the client.
@@ -116,4 +117,19 @@ const uploadProfileImage = async (req, res, next) => {
   }
 };
 
-module.exports = { getUsers, getUserById, createUser, updateUser, deleteUser, uploadProfileImage };
+const transactionController = async (req, res, next) => {
+  try {
+    const users = await createUserWithStore();
+    res.status(200).json({
+      message: "user created successfully",
+      users
+    })
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: error.message
+    });
+  }
+}
+
+module.exports = { getUsers, getUserById, createUser, updateUser, deleteUser, uploadProfileImage, transactionController };
