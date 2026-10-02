@@ -6,11 +6,13 @@ const {
   createUser,
   updateUser,
   deleteUser,
-  uploadProfileImage
+  uploadProfileImage,
+  transactionController
 } = require('../controllers/usersController');
 const validationMiddleware = require('../middleware/validation');
 const { authMiddleware, authorize } = require('../middleware/authMiddleware');
 const upload = require('../middleware/uploadMiddleware');
+const { createUserWithStore } = require('../services/usersService');
 
 router.get('/', authMiddleware, getUsers);
 router.get('/:id', authMiddleware, getUserById);
@@ -18,4 +20,5 @@ router.get('/:id', authMiddleware, getUserById);
 router.put('/:id', authorize('admin'), updateUser); //user needs to be admin to update and delete user details
 router.delete('/:id', authorize('admin'), deleteUser);
 router.post('/:id/profile-image', upload.single('image'), uploadProfileImage); //another users endpoint to upload profile picture.
+router.post('/create-with-store', transactionController); //testing route - created this route to test transactions feature.
 module.exports = router;

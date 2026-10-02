@@ -11,20 +11,40 @@ const getUsers = async ({ page, limit, sortBy, order, search }) => {
   const skip = (page - 1) * limit;
   return prisma.user.findMany({
     orderBy: { [sortBy]: order }, //sorting and order by.
-    include: {
-      stores: true, // return store details.
-      _count: { //return count of total store.
-        select: { stores: true }
-      }
+    //so when we use include it will return all the data, even the passowrd and we are not suppose to return passowrd, so to aviod that we can use 'select'
+    //and with the help of select we will return only what we want to return to client
+    select: {
+      user_id: true,
+      user_name: true,
+      user_email: true,
+      profile_image: true,
+      user_role: true,
+      stores: {
+        select: {
+          store_id: true,
+          store_name: true,
+          store_email: true,
+        },
+      },
+      _count: {
+        select: { stores: true },
+      },
     },
+
+    // include: {
+    //   stores: true, // return store details.
+    //   _count: { //return count of total store.
+    //     select: { stores: true }
+    //   }
+    // },
     where: { //search functionality - we can search by user_name, we can add more fields if required.
       user_name: {
         contains: search,
         mode: 'insensitive'
       }
     },
-    skip: skip, //use for pagiantion
-    take: limit //use for pagiantion
+    skip: skip, //use for pagination
+    take: limit //use for pagination
   });
 };
 
@@ -153,4 +173,44 @@ const uploadProfileImage = async (id, imagePath) => {
   return updateUser;
 };
 
-module.exports = { getUsers, getUserById, updateUser, deleteUser, uploadProfileImage };
+const createUserWithStore = async () => {
+  return prisma.$transaction(async (tx) => {
+
+    const user = await tx.user.create({
+      data: {
+        user_name: 'Manish_pan',
+        user_email: 'manishpandey1@test.com',
+        password: 'hashedPassword'
+      }
+    });
+
+    const store = await tx.store.create({
+      data: {
+        store_name: 'Tech Help',
+        userId: user.user_id,
+      }
+    });
+
+    return { user, store };
+  });
+};
+//this short code of createUserWithStore function
+// const user = await prisma.user.create({
+//   data: {
+//     user_name: 'Nested User',
+//     user_email: `nested-${Date.now()}@test.com`,
+//     password: 'hashedPassword',
+
+//     stores: {
+//       create: {
+//         store_name: 'Nested Store'
+//       }
+//     }
+//   },
+
+//   include: {
+//     stores: true
+//   }
+// });
+
+module.exports = { getUsers, getUserById, updateUser, deleteUser, uploadProfileImage, createUserWithStore };
