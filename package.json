@@ -9,10 +9,14 @@
     "multer": "^2.3.0"
   },
   "devDependencies": {
-    "prisma": "^6.19.3"
+    "jest": "^30.5.2",
+    "prisma": "^6.19.3",
+    "supertest": "^7.3.0"
   },
   "scripts": {
     "postinstall": "prisma skills sync || exit 0",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest --setupFiles=./src/tests/setup.js",
+    "test:file": "jest --setupFiles=./src/tests/setup.js --runTestsByPath"
   }
 }
