@@ -41,7 +41,7 @@ const loginUser = async (userData) => {
       user_email,
     },
   });
-
+  console.log("user", user);
   if (!user) {
     throw new Error('Invalid email');
   }
@@ -54,11 +54,13 @@ const loginUser = async (userData) => {
   if (!isPasswordValid) {
     throw new Error('Invalid password');
   }
+  //here we are creating JWT payload.
   const token = jwt.sign({
     userId: user.user_id,
     userEmail: user.user_email,
     userRole: user.user_role,
   }, JWT_SECRET, { expiresIn: '2h' });
+
   return token;
 
 }
