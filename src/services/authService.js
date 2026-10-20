@@ -26,7 +26,8 @@ const registerUser = async (userData) => {
       user_name: userData.user_name,
       user_email: userData.user_email,
       password: hashedPassword,
-      user_role: userData.user_role || 'user', // Default role is 'user' if not provided
+      user_role: 'user',
+      // user_role: userData.user_role || 'user', // Default role is 'user' if not provided
     }
   });
   return user;
@@ -43,7 +44,7 @@ const loginUser = async (userData) => {
   });
   console.log("user", user);
   if (!user) {
-    throw new Error('Invalid email');
+    throw new Error('Invalid email or password');
   }
 
   const isPasswordValid = await bcrypt.compare(
@@ -52,7 +53,7 @@ const loginUser = async (userData) => {
   );
 
   if (!isPasswordValid) {
-    throw new Error('Invalid password');
+    throw new Error('Invalid email or password');
   }
   //here we are creating JWT payload.
   const token = jwt.sign({
