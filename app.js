@@ -3,12 +3,15 @@ require('dotenv').config();
 const path = require('path');
 const express = require('express');
 const app = express();
+const helmet = require('helmet');
 const usersRouter = require('./src/routes/usersRoute');
 const storeRouter = require('./src/routes/storeRoute');
 const authRouter = require('./src/routes/authRoute');
 const fileRouter = require('./src/routes/fileRoute');
 const logger = require('./src/middleware/logger');
 const errorHandler = require('./src/middleware/errorHandler');
+
+app.use(helmet());
 
 // Middleware to parse JSON requests
 app.use(express.json());
