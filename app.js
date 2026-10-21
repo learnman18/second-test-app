@@ -10,6 +10,9 @@ const authRouter = require('./src/routes/authRoute');
 const fileRouter = require('./src/routes/fileRoute');
 const logger = require('./src/middleware/logger');
 const errorHandler = require('./src/middleware/errorHandler');
+const validateEnv = require('././config/validateEnv');
+
+validateEnv(); // Validate environment variables before starting the server
 
 app.use(helmet());
 

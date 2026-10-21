@@ -95,7 +95,7 @@ describe('Auth Endpoints', () => {
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBe('Error logging in user');
-    expect(response.body.error).toBe('Invalid email');
+    expect(response.body.error).toBe('Invalid email or password');
   });
 
   test('POST /auth/login with invalid password should return 400', async () => {
@@ -118,7 +118,7 @@ describe('Auth Endpoints', () => {
 
     expect(response.statusCode).toBe(400);
     expect(response.body.message).toBe('Error logging in user');
-    expect(response.body.error).toBe('Invalid password');
+    expect(response.body.error).toBe('Invalid email or password');
   });
   test('POST /auth/login should return JWT with correct user data', async () => {
     const email = `jwt_${Date.now()}@example.com`;

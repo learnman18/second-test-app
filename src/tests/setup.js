@@ -7,5 +7,6 @@
 require('dotenv').config({
   path: '.env.test'
 });
+process.env.NODE_ENV = 'test'; //This explicitly marks the process as running tests. Many libraries and frameworks use NODE_ENV to adjust their behavior.
 
 // console.log('TEST DATABASE:', process.env.DATABASE_URL);
