@@ -18,7 +18,7 @@
   },
   "scripts": {
     "postinstall": "prisma skills sync || exit 0",
-    "start": "node server.js",
+    "start": "NODE_ENV=development node server.js",
     "test": "jest --setupFiles=./src/tests/setup.js",
     "test:file": "jest --setupFiles=./src/tests/setup.js --runTestsByPath"
   }

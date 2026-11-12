@@ -2,6 +2,7 @@
 const prisma = require('../../config/prisma');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const AppError = require('../utils/AppError');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -36,7 +37,7 @@ const registerUser = async (userData) => {
 const loginUser = async (userData) => {
   const { user_email, password } = userData;
   // console.log("user_email", user_email);
-  // console.log("password", password);
+  // console.log("password", password); // Q. what if someone console it aur add a debugger on this line wouldn't they find the password?
   const user = await prisma.user.findUnique({
     where: {
       user_email,

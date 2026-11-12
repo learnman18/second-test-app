@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+// console.log("NODE_ENV:", process.env.NODE_ENV);
+
 const path = require('path');
 const express = require('express');
 const app = express();
@@ -26,5 +28,5 @@ app.use('/store', storeRouter);
 app.use('/file', fileRouter);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); // Serve static files from the uploads directory so browser can access the uploaded images. We can access the image by using the URL http://localhost:3000/uploads/<image_name>.
 // express.static -> makes the stored image accessible through HTTP.
-// app.use(errorHandler); // Uncomment this line to enable the centralized error handling middleware, currently we are handling errors in the controller itself.
+app.use(errorHandler); // Uncomment this line to enable the centralized error handling middleware, currently we are handling errors in the controller itself.
 module.exports = app;
