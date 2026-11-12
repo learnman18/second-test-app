@@ -1,5 +1,7 @@
 const fs = require('fs');
 const prisma = require('../../config/prisma');
+const AppError = require('../utils/AppError');
+const bcrypt = require('bcrypt');
 
 //page and limit is query params for pagination, we will use them to get the users in pages, currently hardcoded from controller file, we can check.
 const getUsers = async ({ page, limit, sortBy, order, search }) => {
@@ -68,12 +70,30 @@ const getUserById = async (id) => {
   }
 
   return prisma.user.findUnique({
+    // where: { user_id: userId },
+    // include: {
+    //   stores: true,
+    //   _count: {
+    //     select: { stores: true }
+    //   }
+    // },
     where: { user_id: userId },
-    include: {
-      stores: true,
+    select: {
+      user_id: true,
+      user_name: true,
+      user_email: true,
+      profile_image: true,
+      user_role: true,
+      stores: {
+        select: {
+          store_id: true,
+          store_name: true,
+          store_email: true,
+        },
+      },
       _count: {
-        select: { stores: true }
-      }
+        select: { stores: true },
+      },
     },
   });
 };
@@ -113,6 +133,35 @@ const updateUser = async (id, userData) => {
   });
 };
 
+const updateMyProfileService = async (id, userData) => {
+  const userId = Number(id);
+
+  if (Number.isNaN(userId)) {
+    throw new AppError('Invalid user ID', 400);
+  }
+
+  const { user_name, user_email } = userData;
+
+  if (!user_name && !user_email) {
+    throw new AppError('Please provide name or email to update', 400);
+  }
+
+  return prisma.user.update({
+    where: { user_id: userId },
+    data: {
+      ...(user_name && { user_name }),
+      ...(user_email && { user_email }),
+    },
+    select: {
+      user_id: true,
+      user_name: true,
+      user_email: true,
+      user_role: true,
+      profile_image: true,
+    },
+  });
+};
+
 const deleteUser = async (id) => {
   const userId = Number(id);
 
@@ -124,6 +173,38 @@ const deleteUser = async (id) => {
     where: { user_id: userId },
   });
 };
+
+const changeMyPasswordService = async (userId, currentPassword, newPassword) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      user_id: Number(userId)
+    }
+  })
+  if (!user) {
+    throw new AppError('user not found', 404)
+  }
+  const isPasswordValid = await bcrypt.compare(currentPassword, user.password)
+
+  if (!isPasswordValid) {
+    throw new AppError('current password is invalid', 400)
+  }
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  return prisma.user.update({
+    where: {
+      user_id: user.user_id,
+    },
+    data: {
+      password: hashedPassword,
+    },
+    select: {
+      user_id: true,
+      user_name: true,
+      user_email: true,
+    },
+  });
+
+}
 
 const uploadProfileImage = async (id, imagePath) => {
   const userId = Number(id);
@@ -213,4 +294,4 @@ const createUserWithStore = async () => {
 //   }
 // });
 
-module.exports = { getUsers, getUserById, updateUser, deleteUser, uploadProfileImage, createUserWithStore };
+module.exports = { getUsers, getUserById, updateUser, deleteUser, uploadProfileImage, createUserWithStore, updateMyProfileService, changeMyPasswordService };

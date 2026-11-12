@@ -2,6 +2,7 @@
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.1",
@@ -17,7 +18,7 @@
   },
   "scripts": {
     "postinstall": "prisma skills sync || exit 0",
-    "start": "node server.js",
+    "start": "NODE_ENV=development node server.js",
     "test": "jest --setupFiles=./src/tests/setup.js",
     "test:file": "jest --setupFiles=./src/tests/setup.js --runTestsByPath"
   }

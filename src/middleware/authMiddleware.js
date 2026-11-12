@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const AppError = require('../utils/AppError');
 
 const authMiddleware = (req, res, next) => {
   try {
@@ -37,16 +38,19 @@ req.user.userRole
 */
 
 //authrize user who has certain permission or not for example only admin can delete or else user will get forbidden error.
-const authorize = (allowedRole) => {
+const authorize = (...allowedRoles) => {
   return (req, res, next) => {
     //here we have userRole becuase in JWT we have userRole we can check authSerivce.js file token variable,
     // this valus is coming from jWT payload
     console.log('req.body', req.body);
     console.log('req.user', req.user.userRole);
-    if (req.user.userRole !== allowedRole) {
-      return res.status(403).json({
-        message: `forbidden - user needs to be admin`
-      })
+    if (!req.user) {
+      return next(new AppError("Authentication required", 401));
+    }
+    if (!allowedRoles.includes(req.user.userRole)) {
+      return next(
+        new AppError("You do not have permission to perform this action", 403)
+      );
     }
     next();
   }
