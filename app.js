@@ -13,10 +13,17 @@ const fileRouter = require('./src/routes/fileRoute');
 const logger = require('./src/middleware/logger');
 const errorHandler = require('./src/middleware/errorHandler');
 const validateEnv = require('././config/validateEnv');
+const cors = require('cors');
 
 validateEnv(); // Validate environment variables before starting the server
 
 app.use(helmet());
+
+app.use(cors({
+  origin: 'http://localhost:5173',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
 
 // Middleware to parse JSON requests
 app.use(express.json());

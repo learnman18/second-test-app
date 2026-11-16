@@ -136,13 +136,21 @@ const changeMyPasswordController = async (req, res, next) => {
   }
 };
 
+
 const deleteUser = async (req, res, next) => {
   try {
-    const user = await deleteUserService(req.params.id);
-    res.status(200).json({ message: 'User deleted', user });
+    const requestedUserId = Number(req.params.id);
+    const loggedInUserId = req.user.userId;
+
+    //prevents admin from deleting it's own acccount.
+    if (requestedUserId === loggedInUserId) {
+      throw new AppError('You cannot delete your own account', 403);
+    }
+    await deleteUserService(req.params.id);
+    res.status(204).json({ message: 'User deleted successfully' });
   } catch (error) {
     // res.status(400).json({ message: error.message });
-    return next(error);
+    next(error);
   }
 };
 

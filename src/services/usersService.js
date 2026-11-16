@@ -26,6 +26,7 @@ const getUsers = async ({ page, limit, sortBy, order, search }) => {
           store_id: true,
           store_name: true,
           store_email: true,
+          location: true,
         },
       },
       _count: {
@@ -89,6 +90,7 @@ const getUserById = async (id) => {
           store_id: true,
           store_name: true,
           store_email: true,
+          location: true,
         },
       },
       _count: {
@@ -115,20 +117,32 @@ const getUserById = async (id) => {
 //   });
 // };
 
+
 const updateUser = async (id, userData) => {
   const userId = Number(id);
 
-  if (Number.isNaN(userId)) {
-    throw new Error('Invalid user ID');
+  if (!Number.isInteger(userId) || userId <= 0) {
+    throw new AppError('Invalid user ID', 400);
   }
 
   return prisma.user.update({
-    where: { user_id: userId },
+    where: {
+      user_id: userId,
+    },
     data: {
-      ...(userData.user_name && { user_name: userData.user_name }),
-      ...(userData.user_email && { user_email: userData.user_email }),
-      ...(userData.password && { password: userData.password }),
-      ...(userData.user_role && { user_role: userData.user_role }),
+      ...(userData.user_name !== undefined && {
+        user_name: userData.user_name,
+      }),
+      ...(userData.user_email !== undefined && {
+        user_email: userData.user_email,
+      }),
+    },
+    select: {
+      user_id: true,
+      user_name: true,
+      user_email: true,
+      user_role: true,
+      profile_image: true,
     },
   });
 };
@@ -165,12 +179,19 @@ const updateMyProfileService = async (id, userData) => {
 const deleteUser = async (id) => {
   const userId = Number(id);
 
-  if (Number.isNaN(userId)) {
-    throw new Error('Invalid user ID');
+  if (!Number.isInteger(userId) || userId <= 0) {
+    throw new AppError('Invalid user ID', 400);
   }
 
   return prisma.user.delete({
-    where: { user_id: userId },
+    where: {
+      user_id: userId,
+    },
+    select: {
+      user_id: true,
+      user_name: true,
+      user_email: true,
+    },
   });
 };
 
