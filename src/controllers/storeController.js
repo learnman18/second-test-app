@@ -8,10 +8,13 @@ const {
 
 const getStore = async (req, res) => {
   try {
-    const stores = await getStoreService();
+    const stores = await getStoreService(req.user.userId);
     res.status(200).json(stores);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching stores', error: error.message });
+    res.status(500).json({
+      message: 'Error fetching stores',
+      error: error.message,
+    });
   }
 };
 
@@ -33,7 +36,7 @@ const getStoreById = async (req, res) => {
 const createStore = async (req, res) => {
   try {
     console.log("req.body", req.body);
-    const store = await createStoreService(req.body);
+    const store = await createStoreService(req.body, req.user.userId);
     res.status(201).json({ message: 'Store created', store });
   } catch (error) {
     res.status(400).json({ message: error.message });

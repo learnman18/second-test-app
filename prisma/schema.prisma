@@ -21,6 +21,7 @@ model Store {
   store_id    Int     @id @default(autoincrement())
   store_name  String  @db.VarChar(100)
   store_email String?
+  location    String?
   userId      Int?
   user        User?   @relation(fields: [userId], references: [user_id])
 }

@@ -10,10 +10,10 @@ const {
 const validationMiddleware = require('../middleware/validation');
 const { authMiddleware, authorize } = require('../middleware/authMiddleware');
 
-router.get('/', getStore);
+router.get('/', authMiddleware, getStore);
 router.get('/:id', getStoreById);
-router.post('/', createStore);
+router.post('/', authMiddleware, createStore);
 router.put('/:id', authMiddleware, updateStore);
-router.delete('/:id', deleteStore);
+router.delete('/:id', authMiddleware, deleteStore);
 
 module.exports = router;

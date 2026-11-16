@@ -19,8 +19,14 @@ const changeMyPasswordSchema = Joi.object({
   newPassword: Joi.string().min(6).required(),
 }).unknown(false);
 
+const adminUpdateUserSchema = Joi.object({
+  user_name: Joi.string().min(3),
+  user_email: Joi.string().email(),
+}).min(1).unknown(false);
+
 
 module.exports = {
   updateMyProfileSchema,
-  changeMyPasswordSchema
+  changeMyPasswordSchema,
+  adminUpdateUserSchema
 };

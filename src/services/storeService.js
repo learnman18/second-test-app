@@ -1,9 +1,22 @@
 const prisma = require('../../config/prisma');
 
-const getStoreService = async () => {
+const getStoreService = async (userId) => {
   return prisma.store.findMany({
-    include: {
-      user: true,
+    where: {
+      userId: Number(userId),
+    },
+    select: {
+      store_id: true,
+      store_name: true,
+      store_email: true,
+      location: true,
+      user: {
+        select: {
+          user_id: true,
+          user_name: true,
+          user_email: true,
+        },
+      },
     },
   });
 };
@@ -17,27 +30,41 @@ const getStoreByIdService = async (id) => {
 
   return prisma.store.findUnique({
     where: { store_id: storeId },
-    include: {
-      user: true,
+    select: {
+      store_id: true,
+      store_name: true,
+      store_email: true,
+      location: true,
+      user: {
+        select: {
+          user_id: true,
+          user_name: true,
+          user_email: true,
+        }
+      }
     },
   });
 };
 
-const createStoreService = async (storeData) => {
-  console.log('inside createStoreService', storeData);
-  const { store_name, store_email, userId } = storeData || {};
-  console.log("storeData", storeData);
-  const user_Id = Number(userId);
+const createStoreService = async (storeData, userId) => {
+  const { store_name, store_email, location } = storeData || {};
 
-  if (!store_name) {
+  const authenticatedUserId = Number(userId);
+
+  if (!store_name?.trim()) {
     throw new Error('store_name is required');
+  }
+
+  if (!Number.isInteger(authenticatedUserId) || authenticatedUserId <= 0) {
+    throw new Error('Invalid user ID');
   }
 
   return prisma.store.create({
     data: {
-      store_name,
-      store_email,
-      userId: user_Id,
+      store_name: store_name.trim(),
+      store_email: store_email?.trim() || null,
+      location: location?.trim() || null,
+      userId: authenticatedUserId,
     },
   });
 };

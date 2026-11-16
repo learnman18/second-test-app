@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/AppError');
+const prisma = require('../../config/prisma');
 
-const authMiddleware = (req, res, next) => {
+const authMiddleware = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
     // console.log("authHeader", authHeader);
@@ -11,9 +12,35 @@ const authMiddleware = (req, res, next) => {
 
     const token = authHeader.split(' ')[1];
     // console.log("token", token);
+    if (!token) {
+      throw new AppError('Invalid authorization header', 401);
+    }
+    // Step 1: Verify JWT
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     // console.log("decoded", decoded);
-    req.user = decoded;
+
+    // Step 2: Fetch the latest user details from DB
+    const user = await prisma.user.findUnique({
+      where: {
+        user_id: decoded.userId,
+      },
+      select: {
+        user_id: true,
+        user_email: true,
+        user_role: true,
+      },
+    });
+
+    // Step 3: Check whether the user still exists
+    if (!user) {
+      throw new AppError('User no longer exists', 401);
+    }
+    // Step 4: Attach current DB details to req.user
+    req.user = {
+      userId: user.user_id,
+      userEmail: user.user_email,
+      userRole: user.user_role,
+    };
     // console.log('req user', req.user);
 
     next();
