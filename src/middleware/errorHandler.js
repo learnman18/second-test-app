@@ -5,16 +5,23 @@ const errorHandler = (err, req, res, next) => {
   console.error('err - ', err);
 
   const prismaError = prismaErrorHandler(err);
+  const jwtErrorMessages = {
+    JsonWebTokenError: 'Invalid token',
+    NotBeforeError: 'Token is not active',
+    TokenExpiredError: 'Token has expired',
+  };
+  const jwtErrorMessage = jwtErrorMessages[err.name];
+  console.log('primsa statuscode', prismaError?.statusCode, 'err statuscode', err.statusCode);
   const statusCode =
-    prismaError?.statusCode || err.statusCode || 500;
+    prismaError?.statusCode || err.statusCode || (jwtErrorMessage ? 401 : 500);
 
   console.log("NODE_ENV:", process.env.NODE_ENV);
   // console.log("Error stack:", err.stack);
   if (process.env.NODE_ENV === "development") {
     console.error('inside dev');
     return res.status(statusCode).json({
-      status: err.isOperational ? "fail" : "error",
-      message: err.message,
+      status: err.isOperational || jwtErrorMessage ? "fail" : "error",
+      message: jwtErrorMessage || err.message,
       error: err,
       stack: err.stack,
     });
@@ -24,6 +31,13 @@ const errorHandler = (err, req, res, next) => {
     return res.status(prismaError.statusCode).json({
       status: "fail",
       message: prismaError.message,
+    });
+  }
+
+  if (jwtErrorMessage) {
+    return res.status(statusCode).json({
+      status: "fail",
+      message: jwtErrorMessage,
     });
   }
 

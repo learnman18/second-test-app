@@ -1,43 +1,18 @@
 
-import { useEffect, useState } from 'react';
-import { getStores } from '../api/storeApi';
-import type { Store } from '../api/storeApi';
 import StoreCard from '../components/StoreCard';
-
+import { useStores } from '../hooks/useStores';
+import { useAuth } from '../context/useAuth';
 interface StoresPageProps {
-  token: string;
   refreshKey: number;
 }
 
-const StoresPage = ({ token, refreshKey }: StoresPageProps) => {
-  const [stores, setStores] = useState<Store[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [apiError, setApiError] = useState('');
+const StoresPages = ({ refreshKey }: StoresPageProps) => {
+  const { token } = useAuth();
+  const { stores, isLoading, apiError } = useStores(token, refreshKey);
 
-
-  useEffect(() => {
-    if (!token) {
-      return console.error('token is missing');
-    }
-
-    const getStore = async () => {
-      try {
-        setIsLoading(true);
-        setApiError('');
-
-        const response = await getStores(token);
-        setStores(response);
-      } catch (error) {
-        setApiError(
-          error instanceof Error ? error.message : 'Something went wrong'
-        );
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    getStore()
-  }, [token, refreshKey]);
+  if (!token) {
+    return <p role="alert">Authentication token is required</p>;
+  }
 
   if (isLoading) {
     return <p>Loading stores...</p>;
@@ -67,4 +42,4 @@ const StoresPage = ({ token, refreshKey }: StoresPageProps) => {
   );
 };
 
-export default StoresPage;
+export default StoresPages;

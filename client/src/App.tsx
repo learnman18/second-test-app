@@ -1,32 +1,36 @@
 import { useState } from 'react';
 import Welcome from './components/Welcome';
 import './App.css';
-import StoreFormComp from './components/StoreForm';
-import StoresPage from './pages/StorePages';
+import StoreFormComp from './components/StoreFormComp';
+import StoresPages from './pages/StorePages';
+import { AuthProvider } from './context/AuthProivder';
 
-function App() {
+function AppContent() {
   const [refreshKey, setRefreshKey] = useState(0);
 
   const handleStoreCreated = () => {
     setRefreshKey((previous) => previous + 1);
   };
-
-  const token = 'YOUR_VALID_TEST_TOKEN';
-
   return (
     <>
       <Welcome name="Admin" />
 
       <StoreFormComp
-        token={token}
         onStoreCreated={handleStoreCreated}
       />
 
-      <StoresPage
-        token={token}
+      <StoresPages
         refreshKey={refreshKey}
       />
     </>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
