@@ -43,7 +43,7 @@ const loginUser = async (userData) => {
       user_email,
     },
   });
-  console.log("user", user);
+  // console.log("user", user);
   if (!user) {
     throw new Error('Invalid email or password');
   }

@@ -4,7 +4,7 @@ const prismaErrorHandler = (err) => {
   if (!(err instanceof Prisma.PrismaClientKnownRequestError)) {
     return null;
   }
-
+  console.log('error code', err)
   switch (err.code) {
     // Unique constraint violation
     //all the err.code = P2002,3,25, we are seeing here all of them are prisma error code which we can see in logs.

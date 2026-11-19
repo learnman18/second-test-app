@@ -56,12 +56,13 @@ export interface Store {
   } | null;
 }
 
-export const getStores = async (token: string): Promise<Store[]> => {
+export const getStores = async (token: string, signal?: AbortSignal): Promise<Store[]> => {
   const response = await fetch(`${API_BASE_URL}/store`, {
     method: 'GET',
     headers: {
       Authorization: `Bearer ${token}`,
     },
+    signal,
   });
 
   const data = await response.json();

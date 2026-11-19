@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { createStore } from '../api/storeApi'
+import { useAuth } from '../context/useAuth'
 
 interface StoreFormCompProps {
-  token: string;
   onStoreCreated: () => void;
 }
 
@@ -32,7 +32,8 @@ const validateField = (name: keyof StoreFormData, value: string) => {
   return "";
 };
 
-const StoreFormComp = ({ token, onStoreCreated }: StoreFormCompProps) => {
+const StoreFormComp = ({ onStoreCreated }: StoreFormCompProps) => {
+  const { token, setToken } = useAuth();
   const [storeForm, setStoreForm] = useState<StoreFormData>(emptyForm);
   const [storeFormError, setStoreFormError] = useState<StoreFormData>(emptyForm);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,6 +71,11 @@ const StoreFormComp = ({ token, onStoreCreated }: StoreFormCompProps) => {
       return;
     }
 
+    if (!token) {
+      setApiError("Authentication required.");
+      return;
+    }
+
     console.log(storeForm);
 
     try {
@@ -81,6 +87,7 @@ const StoreFormComp = ({ token, onStoreCreated }: StoreFormCompProps) => {
 
       setStoreForm(emptyForm);
       setStoreFormError(emptyForm);
+      onStoreCreated();
     } catch (error) {
       setApiError(
         error instanceof Error ? error.message : 'Something went wrong'
@@ -89,12 +96,14 @@ const StoreFormComp = ({ token, onStoreCreated }: StoreFormCompProps) => {
       setIsLoading(false);
     }
 
-    onStoreCreated();
 
   };
 
   return (
     <div>
+      <button onClick={() => setToken(null)}>
+        Logout
+      </button>
       <form onSubmit={handleSubmit} noValidate>
         {apiError && <p role="alert">{apiError}</p>}
         <label htmlFor="storeName">Store name</label>
