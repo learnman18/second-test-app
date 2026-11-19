@@ -8,7 +8,7 @@ interface StoresPageProps {
 
 const StoresPages = ({ refreshKey }: StoresPageProps) => {
   const { token } = useAuth();
-  const { stores, isLoading, apiError } = useStores(token, refreshKey);
+  const { stores, isLoading, apiError } = useStores(token ?? '', refreshKey);
 
   if (!token) {
     return <p role="alert">Authentication token is required</p>;

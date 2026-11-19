@@ -33,7 +33,7 @@ const validateField = (name: keyof StoreFormData, value: string) => {
 };
 
 const StoreFormComp = ({ onStoreCreated }: StoreFormCompProps) => {
-  const { token } = useAuth();
+  const { token, setToken } = useAuth();
   const [storeForm, setStoreForm] = useState<StoreFormData>(emptyForm);
   const [storeFormError, setStoreFormError] = useState<StoreFormData>(emptyForm);
   const [isLoading, setIsLoading] = useState(false);
@@ -71,6 +71,11 @@ const StoreFormComp = ({ onStoreCreated }: StoreFormCompProps) => {
       return;
     }
 
+    if (!token) {
+      setApiError("Authentication required.");
+      return;
+    }
+
     console.log(storeForm);
 
     try {
@@ -96,6 +101,9 @@ const StoreFormComp = ({ onStoreCreated }: StoreFormCompProps) => {
 
   return (
     <div>
+      <button onClick={() => setToken(null)}>
+        Logout
+      </button>
       <form onSubmit={handleSubmit} noValidate>
         {apiError && <p role="alert">{apiError}</p>}
         <label htmlFor="storeName">Store name</label>

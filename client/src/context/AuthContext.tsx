@@ -5,8 +5,8 @@ import { createContext } from 'react';
 // Define the shape of the authentication context, which includes the token and a function to update it.
 // Think of this as creating a common communication channel where authentication information will be shared.
 export interface AuthContextType {
-  token: string;
-  setToken: (token: string) => void;
+  token: string | null;
+  setToken: (token: string | null) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
