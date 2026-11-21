@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { loginUser } from '../api/authApi';
+import { loginUser, LoginApiError } from '../api/authApi';
 import { useAuth } from '../context/useAuth';
 import { useNavigate } from 'react-router-dom'
 
@@ -14,20 +14,21 @@ const LoginPage = () => {
 
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     try {
       setApiError('');
       setIsLoading(true);
       const response = await loginUser({ user_email: email, password });
-      setToken(response.token);
-      console.log(response.message);
+      console.log('Login successful');
+      setToken(response.data.token);
       navigate('/stores'); // Redirect to the /stores page after successful login
       setEmail('');
       setPassword('');
     } catch (error) {
-      setApiError(
-        error instanceof Error ? error.message : 'Something went wrong'
-      );
+      if (error instanceof LoginApiError) {
+        setApiError(error.message);
+      } else {
+        setApiError('Something went wrong. Please try again.');
+      }
     } finally {
       setIsLoading(false);
     }
