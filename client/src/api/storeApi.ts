@@ -1,5 +1,5 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+import { apiRequest } from './apiRequest';
 interface CreateStoreData {
   storeName: string;
   location: string;
@@ -17,16 +17,13 @@ interface CreateStoreResponse {
   };
 }
 
-export const createStore = async (
-  storeData: CreateStoreData,
-  token: string
-): Promise<CreateStoreResponse> => {
-  console.log("storeData", storeData, "API_BASE_URL", API_BASE_URL);
-  const response = await fetch(`${API_BASE_URL}/store`, {
+export const createStore = async (storeData: CreateStoreData, token: string): Promise<CreateStoreResponse> => {
+  // console.log("storeData", storeData, "API_BASE_URL", API_BASE_URL);
+  return apiRequest<CreateStoreResponse>(`${API_BASE_URL}/store`, {
     method: 'POST',
+    token,
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({
       store_name: storeData.storeName,
@@ -34,14 +31,6 @@ export const createStore = async (
       store_email: storeData.storeEmail,
     }),
   });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Failed to create store');
-  }
-
-  return data;
 };
 
 export interface Store {
@@ -57,19 +46,9 @@ export interface Store {
 }
 
 export const getStores = async (token: string, signal?: AbortSignal): Promise<Store[]> => {
-  const response = await fetch(`${API_BASE_URL}/store`, {
+  return apiRequest<Store[]>(`${API_BASE_URL}/store`, {
     method: 'GET',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    token,
     signal,
   });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new Error(data.message || 'Failed to fetch stores');
-  }
-
-  return data;
 };

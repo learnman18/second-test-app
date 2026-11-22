@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { AuthContext } from './AuthContext';
+import { setUnauthorizedHandler } from '../api/apiRequest';
 
 //file 2
 // The AuthProvider component is responsible for providing the authentication context to its child components. It manages the token state and provides a function to update it.
@@ -21,6 +22,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.removeItem('token');
     }
   }, [token]);
+
+  //Register callback for unauthorized API responses
+  //The objective is simple: whenever an API request receives 401 Unauthorized, AuthProvider should automatically execute setToken(null).
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setToken(null);
+    });
+
+    return () => {
+      setUnauthorizedHandler(() => { });
+    };
+  }, []);
 
   return (
     <AuthContext.Provider value={{ token, setToken }}>
