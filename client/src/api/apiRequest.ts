@@ -1,10 +1,19 @@
+
+// setUnauthorizedHandler	Correct	Registers or clears the logout callback.
+// handleUnauthorized	Correct	Executes the registered callback if one exists.
+// isUnauthorizedHandled	Correct	Prevents repeated logout handling.
+// resetUnauthorizedHandler	Correct	Allows a new session to handle 401 responses again.
+// ApiErrorResponse	Correct	Describes the expected error response shape.
+// Generic apiRequest<T>	Correct	Allows different API calls to specify their expected response types.
+
+// unauthorizedHandler stores the actual logout function.
+// isUnauthorizedHandled stores whether we've already triggered that logout for the current session.
+
 type UnauthorizedHandler = () => void;
 
 let unauthorizedHandler: UnauthorizedHandler | null = null;
 
-export const setUnauthorizedHandler = (
-  callback: UnauthorizedHandler
-) => {
+export const setUnauthorizedHandler = (callback: UnauthorizedHandler | null) => {
   unauthorizedHandler = callback;
 };
 
@@ -15,6 +24,15 @@ export const handleUnauthorized = () => {
 interface ApiRequestOptions extends RequestInit {
   token?: string;
 }
+interface ApiErrorResponse {
+  message?: string;
+}
+
+let isUnauthorizedHandled = false;
+
+export const resetUnauthorizedHandled = () => {
+  isUnauthorizedHandled = false;
+};
 
 export const apiRequest = async <T>(url: string, options: ApiRequestOptions = {}): Promise<T> => {
   const { token, headers, ...restOptions } = options;
@@ -33,12 +51,14 @@ export const apiRequest = async <T>(url: string, options: ApiRequestOptions = {}
     ? await response.json()
     : null;
 
-  if (response.status === 401) {
+  if (response.status === 401 && !isUnauthorizedHandled) {
+    isUnauthorizedHandled = true;
     handleUnauthorized();
   }
 
   if (!response.ok) {
-    throw new Error(data?.message || 'Something went wrong');
+    const errorData = data as ApiErrorResponse | null;
+    throw new Error(errorData?.message || 'Something went wrong');
   }
 
   return data as T;

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { loginUser, LoginApiError } from '../api/authApi';
 import { useAuth } from '../context/useAuth';
 import { useNavigate } from 'react-router-dom'
+import { resetUnauthorizedHandled } from '../api/apiRequest';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -19,6 +20,7 @@ const LoginPage = () => {
       setIsLoading(true);
       const response = await loginUser({ user_email: email, password });
       console.log('Login successful');
+      resetUnauthorizedHandled();
       setToken(response.data.token);
       navigate('/stores'); // Redirect to the /stores page after successful login
       setEmail('');

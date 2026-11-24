@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => {
-      setUnauthorizedHandler(() => { });
+      setUnauthorizedHandler(null);
     };
   }, []);
 
