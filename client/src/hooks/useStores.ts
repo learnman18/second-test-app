@@ -1,3 +1,24 @@
+
+//React query code replaced with below commented out custom hook code.
+
+import { useQuery } from '@tanstack/react-query';
+import { getStores } from '../api/storeApi';
+import type { Store } from '../api/storeApi';
+import { storeKeys } from '../queryKeys/storeKeys';
+
+export const useStores = (token: string) => {
+  return useQuery<Store[], Error>({
+    queryKey: storeKeys.list(),
+    queryFn: () => getStores(token),
+    enabled: Boolean(token),
+  });
+};
+
+
+//custom hook to fetch stores from the API and manage loading and error states. 
+//Now we will be replacing belwo piece of code with Tanstack/React query.
+
+/*
 import { useEffect, useState } from 'react';
 import { getStores } from '../api/storeApi';
 import type { Store } from '../api/storeApi';
@@ -42,3 +63,4 @@ export const useStores = (token: string, refreshKey: number) => {
   return { stores, isLoading, apiError }
 
 }
+*/
