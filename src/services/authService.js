@@ -61,7 +61,7 @@ const loginUser = async (userData) => {
     userId: user.user_id,
     userEmail: user.user_email,
     userRole: user.user_role,
-  }, JWT_SECRET, { expiresIn: '2h' });
+  }, JWT_SECRET, { expiresIn: '10m' });
 
   return token;
 

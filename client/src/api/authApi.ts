@@ -20,9 +20,7 @@ export class LoginApiError extends Error {
   }
 }
 
-export const loginUser = async (
-  credentials: LoginCredentials
-): Promise<{ data: LoginResponse; statusCode: number }> => {
+export const loginUser = async (credentials: LoginCredentials): Promise<{ data: LoginResponse; statusCode: number }> => {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: 'POST',
     headers: {

@@ -7,6 +7,7 @@ import { createContext } from 'react';
 export interface AuthContextType {
   token: string | null;
   setToken: (token: string | null) => void;
+  logout: () => void; // Add the logout function to the context type
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
