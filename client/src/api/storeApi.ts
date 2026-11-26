@@ -45,6 +45,24 @@ export interface Store {
   } | null;
 }
 
+export const updateStore = (
+  id: number,
+  storeData: CreateStoreData,
+  token: string
+) => {
+  return apiRequest<Store>(
+    `${API_BASE_URL}/store/${id}`,
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(storeData),
+      token,
+    }
+  );
+};
+
 export const getStores = async (token: string, signal?: AbortSignal): Promise<Store[]> => {
   return apiRequest<Store[]>(`${API_BASE_URL}/store`, {
     method: 'GET',
@@ -52,3 +70,4 @@ export const getStores = async (token: string, signal?: AbortSignal): Promise<St
     signal,
   });
 };
+

@@ -3,6 +3,28 @@ import type { ReactNode } from 'react';
 import { AuthContext } from './AuthContext';
 import { setUnauthorizedHandler } from '../api/apiRequest';
 import { useQueryClient } from '@tanstack/react-query';
+import { jwtDecode } from 'jwt-decode';
+
+
+interface DecodedToken {
+  userId?: undefined;
+}
+
+//we are using this function and jwtDecode to decode the jwt token and get the userId from it, so we can use this funciton so user A won't see user B's cached data.
+//we have already added the reactQuery.clear in logout fuction but consider it as second layer from preventing the reactQuery cache data of one user to another.
+
+const getUserIdFromToken = (token: string | null): number | null => {
+  if (!token) return null;
+
+  try {
+    const decoded = jwtDecode<DecodedToken>(token);
+    return typeof (decoded.userId) === 'number'
+      ? decoded.userId
+      : null;
+  } catch {
+    return null;
+  }
+};
 
 //file 2
 // The AuthProvider component is responsible for providing the authentication context to its child components. It manages the token state and provides a function to update it.
@@ -12,9 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // This is called lazy initialization in React.
   // Instead of reading localStorage every time the component renders, React calls this function when the state is initialized.
   // it means that the function will only be executed once when the component is first rendered, now with the help of setToken value will get updated bu this below inilization line won't run.
-  const [token, setToken] = useState<string | null>(() => {
-    return localStorage.getItem('token');
-  });
+  const [token, setToken] = useState<string | null>(() => { return localStorage.getItem('token') });
+  const userId = getUserIdFromToken(token);
 
   const queryClient = useQueryClient();
   //we are calling this function to clear the token so user will logout and also when we logout we want to clear the react query cache so that the
@@ -46,7 +67,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [logout]);
 
   return (
-    <AuthContext.Provider value={{ token, setToken, logout }}>
+    <AuthContext.Provider value={{ token, userId, setToken, logout }}>
       {children}
     </AuthContext.Provider>
   );

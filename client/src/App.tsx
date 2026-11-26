@@ -1,7 +1,7 @@
 // import { useState } from 'react';
 import './App.css';
 import StoreFormComp from './components/StoreFormComp';
-import StoresPages from './pages/StorePages';
+import StoresPages from './pages/StoresPages';
 import { AuthProvider } from './context/AuthProvider';
 import LoginPage from './pages/LoginPage';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
