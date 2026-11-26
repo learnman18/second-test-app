@@ -6,6 +6,7 @@ import { createContext } from 'react';
 // Think of this as creating a common communication channel where authentication information will be shared.
 export interface AuthContextType {
   token: string | null;
+  userId: number | null;
   setToken: (token: string | null) => void;
   logout: () => void; // Add the logout function to the context type
 }

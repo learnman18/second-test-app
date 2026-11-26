@@ -6,7 +6,7 @@ import { storeKeys } from '../queryKeys/storeKeys';
 
 export const useCreateStore = () => {
   const queryClient = useQueryClient(); //This gives us access to the shared QueryClient we configured in App.tsx.
-  const { token } = useAuth();
+  const { token, userId } = useAuth();
 
   return useMutation({
     mutationFn: (storeData: CreateStoreData) => { //The storeData argument is provided when we call mutate().
@@ -19,8 +19,10 @@ export const useCreateStore = () => {
 
     //This callback executes after the mutation succeeds. mutation means whenever we create or update new store.
     onSuccess: () => {
+      if (!userId) return;
+
       queryClient.invalidateQueries({
-        queryKey: storeKeys.all,
+        queryKey: storeKeys.lists(userId),
       });
     },
   });

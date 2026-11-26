@@ -9,8 +9,8 @@ import { useAuth } from '../context/useAuth';
 // const StoresPages = ({ refreshKey }: StoresPageProps) => {}
 
 const StoresPages = () => {
-  const { token } = useAuth();
-  const { data: stores, isPending, isFetching, isError, error } = useStores(token ?? '');
+  const { token, userId } = useAuth();
+  const { data: stores, isPending, isFetching, isError, error } = useStores(token ?? '', userId);
   // const { stores, isLoading, apiError } = useStores(token ?? '', refreshKey);
 
   if (!token) {

@@ -6,11 +6,15 @@ import { getStores } from '../api/storeApi';
 import type { Store } from '../api/storeApi';
 import { storeKeys } from '../queryKeys/storeKeys';
 
-export const useStores = (token: string) => {
+export const useStores = (token: string, userId: number | null) => {
   return useQuery<Store[], Error>({
-    queryKey: storeKeys.list(),
+    queryKey: userId
+      ? storeKeys.lists(userId)
+      : ['stores', 'list', 'no-user'],
+
     queryFn: () => getStores(token),
-    enabled: Boolean(token),
+
+    enabled: Boolean(token && userId),
   });
 };
 
