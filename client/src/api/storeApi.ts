@@ -1,9 +1,9 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 import { apiRequest } from './apiRequest';
 export interface CreateStoreData {
-  storeName: string;
+  store_name: string;
   location: string;
-  storeEmail: string;
+  store_email: string;
 }
 
 interface CreateStoreResponse {
@@ -26,9 +26,9 @@ export const createStore = async (storeData: CreateStoreData, token: string): Pr
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      store_name: storeData.storeName,
+      store_name: storeData.store_name,
       location: storeData.location,
-      store_email: storeData.storeEmail,
+      store_email: storeData.store_email,
     }),
   });
 };
@@ -71,3 +71,12 @@ export const getStores = async (token: string, signal?: AbortSignal): Promise<St
   });
 };
 
+export const deleteStore = (id: number, token: string) => {
+  return apiRequest<void>(
+    `${API_BASE_URL}/store/${id}`,
+    {
+      method: 'DELETE',
+      token,
+    }
+  );
+};

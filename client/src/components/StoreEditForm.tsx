@@ -32,9 +32,9 @@ export const StoreEditForm = ({ storeId, initialValues, onCancel, onUpdated, }: 
       {
         id: storeId,
         storeData: {
-          storeName: storeForm.storeName.trim(),
+          store_name: storeForm.store_name.trim(),
           location: storeForm.location.trim(),
-          storeEmail: storeForm.storeEmail.trim(),
+          store_email: storeForm.store_email.trim(),
         },
       },
       {
@@ -53,8 +53,8 @@ export const StoreEditForm = ({ storeId, initialValues, onCancel, onUpdated, }: 
         <label htmlFor="storeName">Store Name</label>
         <input
           id="storeName"
-          name="storeName"
-          value={storeForm.storeName}
+          name="store_name"
+          value={storeForm.store_name}
           onChange={handleChange}
           required
         />
@@ -75,9 +75,9 @@ export const StoreEditForm = ({ storeId, initialValues, onCancel, onUpdated, }: 
         <label htmlFor="storeEmail">Store Email</label>
         <input
           id="storeEmail"
-          name="storeEmail"
+          name="store_email"
           type="email"
-          value={storeForm.storeEmail}
+          value={storeForm.store_email}
           onChange={handleChange}
         />
       </div>

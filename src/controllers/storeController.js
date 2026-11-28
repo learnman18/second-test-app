@@ -60,11 +60,7 @@ const createStore = async (req, res) => {
 //for user check please checl service file.
 const updateStore = async (req, res) => {
   try {
-    const store = await updateStoreService(
-      req.params.id,
-      req.body,
-      req.user.userId
-    );
+    const store = await updateStoreService(req.params.id, req.body, req.user.userId);
 
     res.status(200).json({
       message: 'Store updated',
