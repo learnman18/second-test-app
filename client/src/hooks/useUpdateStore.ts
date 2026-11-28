@@ -19,7 +19,7 @@ export const useUpdateStore = () => {
       if (!token) {
         throw new Error('Authentication token is required');
       }
-
+      console.log('Updating store with ID:', id, 'and data:', storeData);
       return updateStore(id, storeData, token);
     },
 

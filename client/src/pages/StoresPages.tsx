@@ -1,7 +1,10 @@
-
+import { useState } from 'react';
 import StoreCard from '../components/StoreCard';
+import { StoreEditForm } from '../components/StoreEditForm';
 import { useStores } from '../hooks/useStores';
 import { useAuth } from '../context/useAuth';
+import type { Store, CreateStoreData } from '../api/storeApi';
+import { deleteStore } from '../api/storeApi';
 
 // interface StoresPageProps {
 //   refreshKey: number;
@@ -10,8 +13,15 @@ import { useAuth } from '../context/useAuth';
 
 const StoresPages = () => {
   const { token, userId } = useAuth();
+  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const { data: stores, isPending, isFetching, isError, error } = useStores(token ?? '', userId);
   // const { stores, isLoading, apiError } = useStores(token ?? '', refreshKey);
+
+  //start - These are state created for store delete purpose because we are not using the react query here.
+  const [deletingStoreId, setDeletingStoreId] = useState<number | null>(null);
+  const [deletedStoreIds, setDeletedStoreIds] = useState<number[]>([]);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  //end - These are state created for store delete purpose because we are not using the react query here.
 
   if (!token) {
     return <p role="alert">Authentication token is required</p>;
@@ -29,18 +39,84 @@ const StoresPages = () => {
     return <p>No stores found. Create your first store!</p>;
   }
 
+  //for store delete not using react query, just using normal react code to delete the store. we can use but not using it.
+  const handleDelete = async (id: number) => {
+    if (!token) return;
+
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this store?'
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setDeleteError(null);
+      setDeletingStoreId(id);
+
+      await deleteStore(id, token);
+
+      setDeletedStoreIds((previous) => [...previous, id]);
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error ? error.message : 'Failed to delete store'
+      );
+    } finally {
+      setDeletingStoreId(null);
+    }
+  };
+
+  const getInitialValues = (store: Store): CreateStoreData => ({
+    store_name: store.store_name,
+    location: store.location ?? '',
+    store_email: store.store_email ?? '',
+  });
+
+  const visibleStores = (stores ?? []).filter(
+    (store) => !deletedStoreIds.includes(store.store_id)
+  );
+
   return (
     <section>
       <h2>My Stores</h2>
+
       {isFetching && <p>Refreshing stores...</p>}
-      {stores.map((store) => (
-        <StoreCard
-          key={store.store_id}
-          storeName={store.store_name}
-          location={store.location || 'N/A'}
-          totalProducts={0}
-        />
-      ))}
+
+      {deleteError && <p role="alert">{deleteError}</p>}
+
+      {visibleStores.length === 0 ? (
+        <p>No stores found. Create your first store!</p>
+      ) : (
+        visibleStores.map((store) => (
+          <div key={store.store_id}>
+            <StoreCard
+              storeId={store.store_id}
+              storeName={store.store_name}
+              location={store.location || 'N/A'}
+              totalProducts={0}
+              onDelete={handleDelete}
+              isDeleting={deletingStoreId === store.store_id}
+              deleteDisabled={deletingStoreId !== null}
+            />
+
+            <button
+              type="button"
+              onClick={() => setSelectedStore(store)}
+            >
+              Edit
+            </button>
+
+            {selectedStore?.store_id === store.store_id && (
+              <StoreEditForm
+                key={selectedStore.store_id}
+                storeId={selectedStore.store_id}
+                initialValues={getInitialValues(selectedStore)}
+                onCancel={() => setSelectedStore(null)}
+                onUpdated={() => setSelectedStore(null)}
+              />
+            )}
+          </div>
+        ))
+      )}
     </section>
   );
 };
