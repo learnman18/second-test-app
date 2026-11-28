@@ -80,9 +80,9 @@ const StoreFormComp = () => {
 
     createStoreMutation.mutate( //this mutate is calling and passing the storeForm data to mutationFn inside useCreateStore
       {
-        storeName: storeForm.storeName.trim(),
+        store_name: storeForm.storeName.trim(),
         location: storeForm.location.trim(),
-        storeEmail: storeForm.storeEmail.trim(),
+        store_email: storeForm.storeEmail.trim(),
       },
       {
         onSuccess: () => {
